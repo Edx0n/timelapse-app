@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
 import { Clock, Search, Globe } from 'lucide-react'
-import { useTimeStore } from './store/timeStore'
+import { useTimeStore, useFilteredTimezones } from './store/timeStore'
 import TimeZoneCard from './components/TimeZoneCard'
 import SearchBar from './components/SearchBar'
 import Header from './components/Header'
 
 const App = () => {
-  const { filteredTimezones, updateCurrentTime } = useTimeStore()
+  const updateCurrentTime = useTimeStore((state) => state.updateCurrentTime)
+  const filteredTimezones = useFilteredTimezones()
 
   useEffect(() => {
     updateCurrentTime()

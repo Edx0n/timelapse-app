@@ -5,7 +5,7 @@ import { TIMEZONES } from '../constants/timezones'
 
 export const useTimeStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       timezones: TIMEZONES,
       currentTime: new Date(),
       searchQuery: '',
@@ -26,60 +26,6 @@ export const useTimeStore = create(
             : [...state.favoriteIds, id],
         }))
       },
-
-      get filteredTimezones() {
-        const { timezones, searchQuery, currentTime, favoriteIds } = get()
-        
-        let filtered = timezones
-
-        if (searchQuery) {
-          const query = searchQuery.toLowerCase()
-          filtered = filtered.filter(
-            (tz) =>
-              tz.country.toLowerCase().includes(query) ||
-              tz.city.toLowerCase().includes(query) ||
-              tz.timezone.toLowerCase().includes(query) ||
-              tz.region.toLowerCase().includes(query)
-          )
-        }
-
-        return filtered.map((tz) => {
-          try {
-            const time = formatInTimeZone(
-              currentTime,
-              tz.timezone,
-              'HH:mm:ss'
-            )
-            const date = formatInTimeZone(
-              currentTime,
-              tz.timezone,
-              'MMM dd, yyyy'
-            )
-            const offset = formatInTimeZone(
-              currentTime,
-              tz.timezone,
-              'XXX'
-            )
-
-            return {
-              ...tz,
-              time,
-              date,
-              offset,
-              isFavorite: favoriteIds.includes(tz.id),
-            }
-          } catch (error) {
-            console.error(`Error formatting timezone ${tz.timezone}:`, error)
-            return {
-              ...tz,
-              time: '--:--:--',
-              date: 'Invalid',
-              offset: '+00:00',
-              isFavorite: favoriteIds.includes(tz.id),
-            }
-          }
-        })
-      },
     }),
     {
       name: 'timelapse-storage',
@@ -89,4 +35,61 @@ export const useTimeStore = create(
     }
   )
 )
+
+// Selector to get filtered timezones
+export const useFilteredTimezones = () => {
+  return useTimeStore((state) => {
+    const { timezones, searchQuery, currentTime, favoriteIds } = state
+    
+    let filtered = timezones
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter(
+        (tz) =>
+          tz.country.toLowerCase().includes(query) ||
+          tz.city.toLowerCase().includes(query) ||
+          tz.timezone.toLowerCase().includes(query) ||
+          tz.region.toLowerCase().includes(query)
+      )
+    }
+
+    return filtered.map((tz) => {
+      try {
+        const time = formatInTimeZone(
+          currentTime,
+          tz.timezone,
+          'HH:mm:ss'
+        )
+        const date = formatInTimeZone(
+          currentTime,
+          tz.timezone,
+          'MMM dd, yyyy'
+        )
+        const offset = formatInTimeZone(
+          currentTime,
+          tz.timezone,
+          'XXX'
+        )
+
+        return {
+          ...tz,
+          time,
+          date,
+          offset,
+          isFavorite: favoriteIds.includes(tz.id),
+        }
+      } catch (error) {
+        console.error(`Error formatting timezone ${tz.timezone}:`, error)
+        return {
+          ...tz,
+          time: '--:--:--',
+          date: 'Invalid',
+          offset: '+00:00',
+          isFavorite: favoriteIds.includes(tz.id),
+        }
+      }
+    })
+  })
+}
 
