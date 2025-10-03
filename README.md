@@ -1,5 +1,8 @@
 # Timelapse - World Clock Application
 
+<img width="1372" height="898" alt="image" src="https://github.com/user-attachments/assets/92f1edb2-44fa-4041-8503-17777c756fd3" />
+
+
 A beautiful and modern React application that displays real-time clocks for countries and timezones around the world.
 
 ![Timelapse App](https://img.shields.io/badge/React-18.2-blue)
